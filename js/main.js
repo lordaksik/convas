@@ -137,6 +137,10 @@ function playerTwo(event) {
   }
 }
 
+function timer() {
+        ctx.fillText(time, 730, 60)
+
+}
 
 function draw() {
   ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
