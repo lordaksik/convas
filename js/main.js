@@ -172,23 +172,25 @@ function playerFirstStop() {
 function playerMove() {
 
     if (set.has('KeyA') === true) {
-        if (player.x > 0 && (player.x >= player2.x + player2.width || player.x+player.width <= player2.x )) {
-            player.x = player.x - 7;
-        } else if (player.x > 0 && player.y + player.height < player2.y) {
-            player.x = player.x - 7;
+        if (player.x > 0 && (player.x >= player2.x + player2.width+10 || player.x+player.width <= player2.x )) {
+            player.x = player.x - 10;
+        } else if (player.x > 0 && player.y + player.height < player2.y+10) {
+            player.x = player.x - 10;
         }
     }
+
     if (set.has('KeyW') === true) {
         if (player.y > 150) {
             player.y = player.y - 15;
+
         }
 
     }
     if (set.has('KeyD') === true) {
-        if (player.x < 1350 && (player.x+player.width <= player2.x || player.x >= player2.x + player2.width)) {
-            player.x = player.x + 7;
-        } else if ( player.x > 0 && player.y + player.height < player2.y) {
-            player.x = player.x + 7;
+        if (player.x < 1350 && (player.x+player.width+10 <= player2.x || player.x >= player2.x + player2.width)) {
+            player.x = player.x + 10;
+        } else if ( player.x > 0 && player.y + player.height+10 < player2.y) {
+            player.x = player.x + 10;
         }
     }
     if ((set.has('KeyD') === true) || (set.has('KeyA') === true) || (set.has('KeyW') === true)) {
