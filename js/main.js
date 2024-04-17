@@ -172,7 +172,7 @@ function playerFirstStop() {
 function playerMove() {
 
     if (set.has('KeyA') === true) {
-        if (player.x > 0 && player.x >= player2.x + player2.width) {
+        if (player.x > 0 && (player.x >= player2.x + player2.width || player.x+player.width <= player2.x )) {
             player.x = player.x - 7;
         } else if (player.x > 0 && player.y + player.height < player2.y) {
             player.x = player.x - 7;
@@ -185,7 +185,7 @@ function playerMove() {
 
     }
     if (set.has('KeyD') === true) {
-        if (player.x < 1350 && player.x+player.width <= player2.x ) {
+        if (player.x < 1350 && (player.x+player.width <= player2.x || player.x >= player2.x + player2.width)) {
             player.x = player.x + 7;
         } else if ( player.x > 0 && player.y + player.height < player2.y) {
             player.x = player.x + 7;
@@ -294,7 +294,7 @@ function draw() {
     if (player2.y < 400) {
         player2.y = player2.y + 3;
     }
-    ctx.fillRect(player2.x, player2.y, player.width, player2.height);
+    ctx.fillRect(player2.x, player2.y, player2.width, player2.height);
 
     requestAnimationFrame(draw)
     if (player2.damage + 10 >= hp && !win1) {
