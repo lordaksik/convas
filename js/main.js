@@ -24,6 +24,8 @@ let player = {
     width: 120,
     imgXMove: 700,
     imgYMove: 0,
+    imgXFall: 700,
+    imgYFall: 345 + 230,
     imgXAttack: 350,
     imgYAttack: 345,
     xe: 0,
@@ -31,6 +33,7 @@ let player = {
     stopX: 100,
     stopY: 100,
     attack: 50,
+    fall: false
 }
 
 let player2 = {
@@ -44,10 +47,19 @@ let player2 = {
 var test = 0;
 
 function animationMove(player, side) {
+    if (!player.fall) {
+        side = run
+        var x = player.imgXMove + player.xe;
+        var y = player.imgYMove + player.xy;
+    } else {
+        side = stop
+        x = player.imgXFall;
+        y = player.imgYFall;
+    }
     ctx.drawImage(
         side,
-        player.imgXMove + player.xe,
-        player.imgYMove + player.xy,
+        x,
+        y,
         110,
         115,
         player.x,
@@ -56,6 +68,8 @@ function animationMove(player, side) {
         player.height
     );//x картинки y картинки ширина и высота картинки
 
+    //ctx.fillStyle = "green";
+    // ctx.fillRect(player.x, player.y, player.width, player.height);
     speed++
 
     player.xe = 0;
@@ -75,7 +89,7 @@ function animationMove(player, side) {
 function animationAttack(player, side) {
     let imgXAttack = player.imgXAttack;
     let imgYAttack = player.imgYAttack;
-
+    console.log('attack')
     if (test === 1) {
         imgXAttack += 100;
     }
@@ -95,6 +109,8 @@ function animationAttack(player, side) {
         player.height
     );//x картинки y картинки ширина и высота картинки
 
+    //ctx.fillStyle = "green";
+    // ctx.fillRect(player.x, player.y, player.width, player.height);
 }
 
 document.addEventListener("keydown", playerFirst);
@@ -134,6 +150,7 @@ function playerFirstKeyUp(event) {
     }
     if (event.code === 'KeyW') {
         set.delete('KeyW')
+        player.fall = true;
     }
     if (event.code === 'KeyD') {
         set.delete('KeyD')
@@ -141,7 +158,7 @@ function playerFirstKeyUp(event) {
     if (event.code === 'KeyE') {
         set.delete('KeyE')
 
-        if (player.x > player2.x - player.width) {
+        if (player.x >= player2.x - player.width) {
             player2.damage += player.attack;
         }
         if (player.x > 20 && player.x < 1350) {
@@ -152,12 +169,20 @@ function playerFirstKeyUp(event) {
 }
 
 function playerFirstStop() {
-
+    // var x;
+    // var y;
     if ((set.has('KeyD')) === false && (set.has('KeyA') === false) && (set.has('KeyW') === false) && (set.has('KeyE') === false)) {
+        if (!player.fall) {
+            x = player.imgXMove;
+            y = player.imgYMove;
+        } else {
+            x = player.imgXFall;
+            y = player.imgYFall;
+        }
         ctx.drawImage(
             stop,
-            player.imgXMove,
-            player.imgYMove,
+            x,
+            y,
             110,
             115,
             player.x,
@@ -166,41 +191,45 @@ function playerFirstStop() {
             player.height
         );//x картинки y картинки ширина и высота картинки
 
+        //  ctx.fillStyle = "green";
+        //  ctx.fillRect(player.x, player.y, player.width, player.height);
     }
 }
 
 function playerMove() {
 
     if (set.has('KeyA') === true) {
-        if (player.x > 0 && (player.x >= player2.x + player2.width+10 || player.x+player.width <= player2.x )) {
+        if (player.x > 0 && (player.x >= player2.x + player2.width + 1 || player.x + player.width <= player2.x)) {
             player.x = player.x - 10;
-        } else if (player.x > 0 && player.y + player.height < player2.y+10) {
+        } else if (player.x > 0 && player.y + player.height < player2.y + (player2.height / 2) + 1) {
             player.x = player.x - 10;
         }
     }
 
-    if (set.has('KeyW') === true) {
-        if (player.y > 150) {
+    if (set.has('KeyW') === true && player.fall === false) {
+        if (player.y > 100) {
             player.y = player.y - 15;
-
+        } else {
+            player.fall = true
         }
+
 
     }
     if (set.has('KeyD') === true) {
-        if (player.x < 1350 && (player.x+player.width+10 <= player2.x || player.x >= player2.x + player2.width)) {
+        if (player.x < 1350 && (player.x + player.width + 1 <= player2.x || player.x >= player2.x + player2.width)) {
             player.x = player.x + 10;
-        } else if ( player.x > 0 && player.y + player.height+10 < player2.y) {
+        } else if (player.x < 1350 && player.x > 0 && player.y + player.height + 1 < player2.y + (player2.height / 2)) {
             player.x = player.x + 10;
         }
     }
     if ((set.has('KeyD') === true) || (set.has('KeyA') === true) || (set.has('KeyW') === true)) {
-        animationMove(player, run);
+        animationMove(player);
     }
 }
 
 function playerFirstAttack(player, side) {
 
-    if ((set.has('KeyD')) === false && (set.has('KeyA') === false) && (set.has('KeyW') === false) && (set.has('KeyE') === true)) {
+    if ((set.has('KeyD')) === false && (set.has('KeyA') === false) && (set.has('KeyW') === false) && (set.has('KeyE') === true) && player.y === 400) {
         animationAttack(player, side)
 
     }
@@ -289,13 +318,33 @@ function draw() {
     if (player.y < 400) {
         player.y = player.y + 7;
     }
+    if (player.y + player.height >= 620) {
+        player.y = 400;
+        player.fall = false
+    }
+
+    if (player.x + player.width / 2 <= player2.x + player2.width / 2 && player.x + player.width > player2.x && player.y + player.height - 120 >= player2.y) {
+        console.log(player.x + player.height);
+        console.log(player2.x + (player2.width / 2));
+        player.x = player.x - 10;
+    }
+    if (player.x + player.width / 2 > player2.x + player2.width / 2 && player.x < player2.x + player2.width && player.y + player.height - 120 >= player2.y) {
+        console.log(player.x + player.height);
+        console.log(player2.x + (player2.width / 2));
+        player.x = player.x + 10;
+    }
+
     // ctx.drawImage(mol, player.imgX,player.imgY,800,1050,player.x, player.y, player.width, player.height);//x картинки y картинки ширина и высота картинки
 
 
     ctx.fillStyle = 'yellow'; // меняем цвет клеток
     if (player2.y < 400) {
-        player2.y = player2.y + 3;
+        player2.y = player2.y + 7;
     }
+    if (player2.y + player2.height > 620) {
+        player2.y = 400;
+    }
+
     ctx.fillRect(player2.x, player2.y, player2.width, player2.height);
 
     requestAnimationFrame(draw)
