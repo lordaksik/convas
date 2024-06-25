@@ -33,7 +33,8 @@ let player = {
     stopX: 100,
     stopY: 100,
     attack: 50,
-    fall: false
+    fall: false,
+    animationAttackRight: 0,
 }
 
 let player2 = {
@@ -44,7 +45,7 @@ let player2 = {
     damage: 0,
     hp: 550,
 }
-var test = 0;
+
 
 function animationMove(player, side) {
     if (!player.fall) {
@@ -90,11 +91,11 @@ function animationAttack(player, side) {
     let imgXAttack = player.imgXAttack;
     let imgYAttack = player.imgYAttack;
     console.log('attack')
-    if (test === 1) {
+    if (player.animationAttackRight === 1) {
         imgXAttack += 100;
     }
-    if (test === 2) {
-        test = 0;
+    if (player.animationAttackRight === 2) {
+        player.animationAttackRight = 0;
     }
 
     ctx.drawImage(
@@ -158,19 +159,19 @@ function playerFirstKeyUp(event) {
     if (event.code === 'KeyE') {
         set.delete('KeyE')
 
-        if (player.x >= player2.x - player.width) {
+        if (player.x >= player2.x - player.width && !player.fall) {
             player2.damage += player.attack;
         }
         if (player.x > 20 && player.x < 1350) {
             player.x = player.x - 10;
         }
-        test++;
+        player.animationAttackRight++;
     }
 }
 
 function playerFirstStop() {
-    // var x;
-    // var y;
+    var x;
+    var y;
     if ((set.has('KeyD')) === false && (set.has('KeyA') === false) && (set.has('KeyW') === false) && (set.has('KeyE') === false)) {
         if (!player.fall) {
             x = player.imgXMove;
