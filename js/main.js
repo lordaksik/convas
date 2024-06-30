@@ -217,7 +217,7 @@ function playerFirstKeyUp(event) {
     if (event.code === 'KeyE') {
         set.delete('KeyE')
 
-        if (player.x >= player2.x - player.width && !player.fall) {
+        if (player.x >= player2.x - player.width && player.y === 400) {
             player2.damage += player.attack;
         }
         if (player.x > 20 && player.x < 1350) {
@@ -229,7 +229,7 @@ function playerFirstKeyUp(event) {
 
 function playerFirstStop(player) {
     var x, y, side;
-    if ((set.has('KeyD')) === false && (set.has('KeyA') === false) && (set.has('KeyW') === false) && (set.has('KeyE') === false)) {
+    if ((set.has('KeyD')) === false && (set.has('KeyA') === false) && (set.has('KeyW') === false)) {
         if (!player.fall) {
             if (player.looksLefts) {
                 side = player.imgStopLeft.img;
