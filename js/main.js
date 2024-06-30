@@ -22,19 +22,55 @@ let player = {
     y: 400,
     height: 220,
     width: 120,
-    imgXMove: 700,
-    imgYMove: 0,
-    imgXFall: 700,
-    imgYFall: 345 + 230,
-    imgXAttack: 350,
-    imgYAttack: 345,
-    xe: 0,
-    xy: 0,
-    stopX: 100,
-    stopY: 100,
+    imgMoveLeft: {
+        img: run,
+        imgXMoveStat: 700,
+        imgYMoveStat: 0,
+        imgXMove: 700,
+        imgYMove: 0,
+    },
+    imgMoveRight: {
+        img: stop,
+        imgXMoveStat: 20,
+        imgYMoveStat: 0,
+        imgXMove: 20,
+        imgYMove: 0,
+    },
+    imgStopLeft: {
+        img: stop,
+        imgXStop: 700,
+        imgYStop: 0,
+    },
+    imgStopRight: {
+        img: run,
+        imgXStop: 20,
+        imgYStop: 0,
+    },
+    imgFallLeft: {
+        img: stop,
+        imgXFall: 700,
+        imgYFall: 345 + 230,
+    },
+    imgFallRight: {
+        img: run,
+        imgXFall: 10,
+        imgYFall: 345 + 230,
+    },
+    imgAttackRight: {
+        img: stop,
+        imgXAttack: 350,
+        imgYAttack: 345,
+        animationAttackRight: 0,
+    },
+    imgAttackLeft: {
+        img: run,
+        imgXAttack: 350,
+        imgYAttack: 345,
+        animationAttackLeft: 0,
+    },
     attack: 50,
     fall: false,
-    animationAttackRight: 0,
+    looksLefts: true,
 }
 
 let player2 = {
@@ -44,43 +80,57 @@ let player2 = {
     width: 120,
     damage: 0,
     hp: 550,
+    looksLefts: true,
 }
 
 
 function animationMove(player, side) {
+    var x, y;
     if (!player.fall) {
-        side = run
-        var x = player.imgXMove + player.xe;
-        var y = player.imgYMove + player.xy;
+        if (player.looksLefts) {
+            side = run
+            x = player.imgMoveLeft.imgXMove;
+            y = player.imgMoveLeft.imgYMove;
+        } else {
+            side = stop
+            x = player.imgMoveRight.imgXMove;
+            y = player.imgMoveRight.imgYMove;
+        }
     } else {
-        side = stop
-        x = player.imgXFall;
-        y = player.imgYFall;
+        if (player.looksLefts) {
+            side = player.imgFallLeft.img
+            x = player.imgFallLeft.imgXFall;
+            y = player.imgFallLeft.imgYFall;
+        } else {
+            side = player.imgFallRight.img
+            x = player.imgFallRight.imgXFall;
+            y = player.imgFallRight.imgYFall;
+        }
     }
     ctx.drawImage(
         side,
         x,
-        y,
-        110,
+        y + 15,
+        80,
         115,
         player.x,
         player.y,
         player.width,
-        player.height
+        player.height + 45
     );//x картинки y картинки ширина и высота картинки
 
     //ctx.fillStyle = "green";
     // ctx.fillRect(player.x, player.y, player.width, player.height);
     speed++
 
-    player.xe = 0;
-    player.xy = 0;
-    player.stopY = 0;
     if (speed % 10 === 0) {
+
         if (speed !== 30) {
-            player.imgXMove += 100;
+            player.imgMoveLeft.imgXMove += 115;
+            player.imgMoveRight.imgXMove += 115;
         } else {
-            player.imgXMove = 700;
+            player.imgMoveLeft.imgXMove = player.imgMoveLeft.imgXMoveStat;
+            player.imgMoveRight.imgXMove = player.imgMoveRight.imgXMoveStat;
             speed = 0;
         }
     }
@@ -88,36 +138,44 @@ function animationMove(player, side) {
 }
 
 function animationAttack(player, side) {
-    let imgXAttack = player.imgXAttack;
-    let imgYAttack = player.imgYAttack;
-    console.log('attack')
-    if (player.animationAttackRight === 1) {
-        imgXAttack += 100;
-    }
-    if (player.animationAttackRight === 2) {
-        player.animationAttackRight = 0;
+    let imgXAttack, imgYAttack;
+    if (player.looksLefts) {
+        side = player.imgAttackRight.img
+        imgXAttack = player.imgAttackRight.imgXAttack;
+        imgYAttack = player.imgAttackRight.imgYAttack;
+        if (player.imgAttackRight.animationAttackRight === 1) {
+            imgXAttack += 110;
+        }
+        if (player.imgAttackRight.animationAttackRight === 2) {
+            player.imgAttackRight.animationAttackRight = 0;
+        }
+    } else {
+        side = player.imgAttackLeft.img
+        imgXAttack = player.imgAttackLeft.imgXAttack;
+        imgYAttack = player.imgAttackLeft.imgYAttack;
+        if (player.imgAttackLeft.animationAttackLeft === 1) {
+            imgXAttack += 110;
+        }
+        if (player.imgAttackLeft.animationAttackLeft === 2) {
+            player.imgAttackLeft.animationAttackLeft = 0;
+        }
     }
 
     ctx.drawImage(
         side,
         imgXAttack,
-        imgYAttack,
+        imgYAttack + 15,
         110,
         115,
         player.x,
         player.y,
         player.width,
-        player.height
+        player.height + 45
     );//x картинки y картинки ширина и высота картинки
 
     //ctx.fillStyle = "green";
     // ctx.fillRect(player.x, player.y, player.width, player.height);
 }
-
-document.addEventListener("keydown", playerFirst);
-document.addEventListener("keyup", playerFirstKeyUp);
-document.addEventListener("keydown", playerTwo);
-document.addEventListener("keyup", playerUp2);
 
 function texts() {
     if (timers > 0 && !win1 && !win2) {
@@ -165,31 +223,44 @@ function playerFirstKeyUp(event) {
         if (player.x > 20 && player.x < 1350) {
             player.x = player.x - 10;
         }
-        player.animationAttackRight++;
+        player.imgAttackRight.animationAttackRight++;
     }
 }
 
-function playerFirstStop() {
-    var x;
-    var y;
+function playerFirstStop(player) {
+    var x, y, side;
     if ((set.has('KeyD')) === false && (set.has('KeyA') === false) && (set.has('KeyW') === false) && (set.has('KeyE') === false)) {
         if (!player.fall) {
-            x = player.imgXMove;
-            y = player.imgYMove;
+            if (player.looksLefts) {
+                side = player.imgStopLeft.img;
+                x = player.imgStopLeft.imgXStop;
+                y = player.imgStopLeft.imgYStop;
+            } else {
+                side = player.imgStopRight.img;
+                x = player.imgStopRight.imgXStop;
+                y = player.imgStopRight.imgYStop;
+            }
         } else {
-            x = player.imgXFall;
-            y = player.imgYFall;
+            if (player.looksLefts) {
+                side = player.imgFallLeft.img
+                x = player.imgFallLeft.imgXFall;
+                y = player.imgFallLeft.imgYFall;
+            } else {
+                side = player.imgFallRight.img
+                x = player.imgFallRight.imgXFall;
+                y = player.imgFallRight.imgYFall;
+            }
         }
         ctx.drawImage(
-            stop,
+            side,
             x,
-            y,
-            110,
+            y + 15,
+            80,
             115,
             player.x,
             player.y,
             player.width,
-            player.height
+            player.height + 45
         );//x картинки y картинки ширина и высота картинки
 
         //  ctx.fillStyle = "green";
@@ -228,13 +299,44 @@ function playerMove() {
     }
 }
 
-function playerFirstAttack(player, side) {
-
-    if ((set.has('KeyD')) === false && (set.has('KeyA') === false) && (set.has('KeyW') === false) && (set.has('KeyE') === true) && player.y === 400) {
-        animationAttack(player, side)
-
+function playerFall(player) {
+    if (player.y < 400) {
+        player.y = player.y + 7;
     }
+    if (player.y + player.height >= 620) {
+        player.y = 400;
+        player.fall = false
+    }
+}
 
+function playerRolling(player, player2) {
+    if (player.x + player.width / 2 <= player2.x + player2.width / 2 && player.x + player.width > player2.x && player.y + player.height - 120 >= player2.y) {
+        player.x = player.x - 10;
+    }
+    if (player.x + player.width / 2 > player2.x + player2.width / 2 && player.x < player2.x + player2.width && player.y + player.height - 120 >= player2.y) {
+        player.x = player.x + 10;
+    }
+}
+
+function playerSide(player, player2) {
+    player.looksLefts = player.x + (player.width / 2) < player2.x + (player2.width / 2);
+}
+
+function playerFirstAttack(player) {
+    if ((set.has('KeyD') === false) &&
+        (set.has('KeyA') === false) &&
+        (set.has('KeyW') === false) &&
+        (set.has('KeyE') === true) &&
+        !player.fall) {
+        animationAttack(player)
+    }
+}
+
+function playerFirstHealths() {
+    ctx.strokeStyle = 'OrangeRed';
+    ctx.strokeRect(100, 40, 550, 50)
+    ctx.fillStyle = 'LawnGreen'; // меняем цвет клеток
+    ctx.fillRect(100, 40, 550, 50);
 }
 
 function playerTwo(event) {
@@ -262,7 +364,6 @@ function playerUp2(event) {
     }
 }
 
-
 function movePlayerTwo(player) {
     if (set.has('KeyJ') === true) {
         if (player.x > 0) {
@@ -281,13 +382,6 @@ function movePlayerTwo(player) {
     }
 }
 
-function playerFirstHealths() {
-    ctx.strokeStyle = 'OrangeRed';
-    ctx.strokeRect(100, 40, 550, 50)
-    ctx.fillStyle = 'LawnGreen'; // меняем цвет клеток
-    ctx.fillRect(100, 40, 550, 50);
-}
-
 function playerTwoHealths(hp, damage) {
     if (damage >= 550) {
         damage = 550;
@@ -298,42 +392,30 @@ function playerTwoHealths(hp, damage) {
     ctx.fillRect(850 + damage, 40, hp - damage, 50);
 }
 
+document.addEventListener("keydown", playerFirst);
+document.addEventListener("keyup", playerFirstKeyUp);
+document.addEventListener("keydown", playerTwo);
+document.addEventListener("keyup", playerUp2);
+
 function draw() {
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-    playerFirstStop();
+    playerSide(player, player2);
+    playerFirstStop(player);
     playerFirstHealths();
     playerTwoHealths(player2.hp, player2.damage);
-
-
     ctx.font = '50px serif';
     ctx.fillStyle = 'black'
     if (timers < 10) {
         center = 740;
     }
     playerMove()
-    playerFirstAttack(player, stop)
+    playerFirstAttack(player)
     movePlayerTwo(player2)
     ctx.fillText(timers, center, 80);
 
     // ctx.fillStyle = 'red'; // меняем цвет клеток
-    if (player.y < 400) {
-        player.y = player.y + 7;
-    }
-    if (player.y + player.height >= 620) {
-        player.y = 400;
-        player.fall = false
-    }
-
-    if (player.x + player.width / 2 <= player2.x + player2.width / 2 && player.x + player.width > player2.x && player.y + player.height - 120 >= player2.y) {
-        console.log(player.x + player.height);
-        console.log(player2.x + (player2.width / 2));
-        player.x = player.x - 10;
-    }
-    if (player.x + player.width / 2 > player2.x + player2.width / 2 && player.x < player2.x + player2.width && player.y + player.height - 120 >= player2.y) {
-        console.log(player.x + player.height);
-        console.log(player2.x + (player2.width / 2));
-        player.x = player.x + 10;
-    }
+    playerFall(player)
+    playerRolling(player, player2)
 
     // ctx.drawImage(mol, player.imgX,player.imgY,800,1050,player.x, player.y, player.width, player.height);//x картинки y картинки ширина и высота картинки
 
