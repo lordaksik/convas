@@ -232,7 +232,7 @@ function playerFirstStop(player) {
     if (((set.has('KeyD')) === false &&
         (set.has('KeyA') === false) &&
         (set.has('KeyW') === false) &&
-        (set.has('KeyE') === false) ) || (set.has('KeyE') === true) && player.fall) {
+        (set.has('KeyE') === false)) || (set.has('KeyE') === true) && player.fall) {
         if (!player.fall) {
             if (player.looksLefts) {
                 side = player.imgStopLeft.img;
