@@ -229,7 +229,10 @@ function playerFirstKeyUp(event) {
 
 function playerFirstStop(player) {
     var x, y, side;
-    if ((set.has('KeyD')) === false && (set.has('KeyA') === false) && (set.has('KeyW') === false)) {
+    if (((set.has('KeyD')) === false &&
+        (set.has('KeyA') === false) &&
+        (set.has('KeyW') === false) &&
+        (set.has('KeyE') === false) ) || (set.has('KeyE') === true) && player.fall) {
         if (!player.fall) {
             if (player.looksLefts) {
                 side = player.imgStopLeft.img;
