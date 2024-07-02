@@ -69,6 +69,7 @@ let player = {
         animationAttackLeft: 0,
     },
     attack: 50,
+    attackEnd: true,
     fall: false,
     looksLefts: true,
 }
@@ -197,9 +198,7 @@ function playerFirst(event) {
     }
     if (event.code === 'KeyE') {
         set.add('KeyE')
-        if (player.x > 20 && player.x < 1350) {
-            player.x = player.x + 10;
-        }
+        damage(player,player2)
     }
 }
 
@@ -217,6 +216,11 @@ function playerFirstKeyUp(event) {
     if (event.code === 'KeyE') {
         set.delete('KeyE')
 
+function damage(player, player2){
+    if (player.looksLefts) {
+        if (player.x > 20 && player.x < 1350) {
+            player.x = player.x + 10;
+        }
         if (player.x >= player2.x - player.width && player.y === 400) {
             player2.damage += player.attack;
         }
@@ -224,6 +228,17 @@ function playerFirstKeyUp(event) {
             player.x = player.x - 10;
         }
         player.imgAttackRight.animationAttackRight++;
+    } else {
+        if (player.x > 20 && player.x < 1350) {
+            player.x = player.x - 10;
+        }
+        if (player.x <= player2.x + player.width && player.y === 400) {
+            player2.damage += player.attack;
+        }
+        if (player.x > 20 && player.x < 1350) {
+            player.x = player.x + 10;
+        }
+        player.imgAttackLeft.animationAttackLeft++;
     }
 }
 
