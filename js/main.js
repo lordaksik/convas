@@ -198,7 +198,9 @@ function playerFirst(event) {
     }
     if (event.code === 'KeyE') {
         set.add('KeyE')
-        damage(player,player2)
+        if (player.attackEnd) {
+            damage(player, player2)
+        }
     }
 }
 
@@ -215,8 +217,11 @@ function playerFirstKeyUp(event) {
     }
     if (event.code === 'KeyE') {
         set.delete('KeyE')
+        player.attackEnd = true
+    }
+}
 
-function damage(player, player2){
+function damage(player, player2) {
     if (player.looksLefts) {
         if (player.x > 20 && player.x < 1350) {
             player.x = player.x + 10;
@@ -228,6 +233,7 @@ function damage(player, player2){
             player.x = player.x - 10;
         }
         player.imgAttackRight.animationAttackRight++;
+
     } else {
         if (player.x > 20 && player.x < 1350) {
             player.x = player.x - 10;
@@ -240,6 +246,7 @@ function damage(player, player2){
         }
         player.imgAttackLeft.animationAttackLeft++;
     }
+    player.attackEnd = false
 }
 
 function playerFirstStop(player) {
