@@ -146,12 +146,9 @@ let player = {
         },
     },
     attack: 20,
-    attackEnd:
-        true,
-    fall:
-        false,
-    looksLefts:
-        true,
+    attackEnd: true,
+    fall: false,
+    looksLefts: true,
 }
 
 let player2 = {
@@ -278,10 +275,10 @@ let player2 = {
     },
     damage: 0,
     attack: 20,
+    attackEnd: true,
     hp: 550,
     looksLefts: false,
 }
-
 
 function animationMove(player) {
     var x, y, side;
@@ -323,7 +320,6 @@ function animationMove(player) {
     player.speed++
 
     if (player.speed % 10 === 0) {
-        console.log(player.speed)
         if (player.speed !== 30) {
             player.imgMoveLeft.imgXMove += 115;
             player.imgMoveRight.imgXMove += 115;
@@ -446,6 +442,7 @@ function playerFirst(event, player, player2) {
         set.add(player.key.right)
     }
     if (event.code === player.key.attack) {
+
         set.add(player.key.attack)
         if (player.attackEnd) {
             damage(player, player2)
@@ -460,7 +457,7 @@ function playerFirst(event, player, player2) {
 }
 
 
-function playerFirstKeyUp(event, player) {
+function playerKeyUp(event, player) {
     if (event.code === player.key.left) {
         set.delete(player.key.left)
     }
@@ -473,6 +470,16 @@ function playerFirstKeyUp(event, player) {
     }
     if (event.code === player.key.attack) {
         set.delete(player.key.attack)
+        if (player.looksLefts) {
+            if (player.x > 20 && player.x < 1350) {
+                player.x = player.x - 50;
+            }
+        } else {
+            if (player.x > 20 && player.x < 1350) {
+                player.x = player.x + 50;
+            }
+        }
+
         player.attackEnd = true
     }
     if (event.code === player.key.combo) {
@@ -491,34 +498,32 @@ function damageComba(player, player2) {
 }
 
 function damage(player, player2) {
+    let block = 0
+
+    if (set.has(player2.key.block)) {
+        block = player.attack
+    }
     if (player.looksLefts) {
         if (player.x > 20 && player.x < 1350) {
-            player.x = player.x + 10;
+            player.x = player.x + 50;
         }
         if (player.x >= player2.x - player.width && player.y === 400) {
-            player2.damage += player.attack;
-        }
-        if (player.x > 20 && player.x < 1350) {
-            player.x = player.x - 10;
+            player2.damage += player.attack - block;
         }
         player.imgAttackRight.animationAttackRight++;
-
     } else {
-        if (player.x > 20 && player.x < 1350) {
-            player.x = player.x - 10;
-        }
         if (player.x <= player2.x + player.width && player.y === 400) {
-            player2.damage += player.attack;
+            player2.damage += player.attack - block;
         }
         if (player.x > 20 && player.x < 1350) {
-            player.x = player.x + 10;
+            player.x = player.x - 50;
         }
         player.imgAttackLeft.animationAttackLeft++;
     }
     player.attackEnd = false
 }
 
-function playerFirstStop(player) {
+function playerStop(player) {
     var x, y, side;
     if (((set.has(player.key.right)) === false &&
         (set.has(player.key.left) === false) &&
@@ -694,10 +699,18 @@ function playerFall(player) {
 }
 
 function playerRolling(player, player2) {
-    if (player.x + player.width / 2 <= player2.x + player2.width / 2 && player.x + player.width > player2.x && player.y + player.height - 120 >= player2.y) {
+    if (player.x + player.width / 2 <= player2.x + player2.width / 2
+        && player.x + player.width > player2.x
+        && player.y + player.height - 120 >= player2.y
+        && player.fall
+    ) {
         player.x = player.x - 10;
     }
-    if (player.x + player.width / 2 > player2.x + player2.width / 2 && player.x < player2.x + player2.width && player.y + player.height - 120 >= player2.y) {
+    if (player.x + player.width / 2 > player2.x + player2.width / 2
+        && player.x < player2.x + player2.width
+        && player.y + player.height - 120 >= player2.y
+        && player.fall
+    ) {
         player.x = player.x + 10;
     }
 }
@@ -732,13 +745,13 @@ document.addEventListener("keydown", function () {
     playerFirst(event, player, player2)
 });
 document.addEventListener("keyup", function () {
-    playerFirstKeyUp(event, player)
+    playerKeyUp(event, player)
 });
 document.addEventListener("keydown", function () {
     playerFirst(event, player2, player)
 });
 document.addEventListener("keyup", function () {
-    playerFirstKeyUp(event, player2)
+    playerKeyUp(event, player2)
 });
 
 function draw() {
@@ -762,11 +775,11 @@ function draw() {
     playerFall(player)
     playerFall(player2)
     playerRolling(player, player2)
-    //playerRolling(player2, player)
+    playerRolling(player2, player)
     playerSide(player, player2);
     playerSide(player2, player);
-    playerFirstStop(player);
-    playerFirstStop(player2);
+    playerStop(player);
+    playerStop(player2);
     playerFirstHealths(player.hp, player.damage);
     playerTwoHealths(player2.hp, player2.damage);
     animationCombo(player, player2)
