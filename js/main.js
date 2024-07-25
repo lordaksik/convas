@@ -30,6 +30,7 @@ let player = {
         combo: 'KeyZ',
         block: 'KeyQ',
     },
+    
     x: 300,
     y: 400,
     height: 220,
