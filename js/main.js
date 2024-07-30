@@ -30,7 +30,7 @@ let player = {
         combo: 'KeyZ',
         block: 'KeyQ',
     },
-    
+
     x: 300,
     y: 400,
     height: 220,
@@ -435,17 +435,32 @@ function texts() {
 function playerFirst(event, player, player2) {
     if (event.code === player.key.left) {
         set.add(player.key.left)
+        set.delete(player.key.block)
+        set.delete(player.key.attack)
     }
     if (event.code === player.key.up) {
         set.add(player.key.up)
+        set.delete(player.key.block)
+        set.delete(player.key.attack)
     }
     if (event.code === player.key.right) {
         set.add(player.key.right)
+        set.delete(player.key.block)
+        set.delete(player.key.attack)
     }
     if (event.code === player.key.attack) {
-
         set.add(player.key.attack)
-        if (player.attackEnd) {
+        set.delete(player.key.right)
+        set.delete(player.key.left)
+        set.delete(player.key.up)
+        set.delete(player.key.combo)
+        set.delete(player.key.block)
+        if (player.attackEnd &&
+            (set.has(player.key.right) === false) &&
+            (set.has(player.key.left) === false) &&
+            (set.has(player.key.up) === false) &&
+            (set.has(player.key.combo) === false) &&
+            (set.has(player.key.block) === false)) {
             damage(player, player2)
         }
     }
@@ -454,6 +469,10 @@ function playerFirst(event, player, player2) {
     }
     if (event.code === player.key.block) {
         set.add(player.key.block)
+        set.delete(player.key.right)
+        set.delete(player.key.left)
+        set.delete(player.key.up)
+        set.delete(player.key.combo)
     }
 }
 
@@ -471,13 +490,21 @@ function playerKeyUp(event, player) {
     }
     if (event.code === player.key.attack) {
         set.delete(player.key.attack)
-        if (player.looksLefts) {
-            if (player.x > 20 && player.x < 1350) {
-                player.x = player.x - 50;
-            }
-        } else {
-            if (player.x > 20 && player.x < 1350) {
-                player.x = player.x + 50;
+        if (!player.fall &&
+            (set.has(player.key.right) === false) &&
+            (set.has(player.key.left) === false) &&
+            (set.has(player.key.up) === false) &&
+            (set.has(player.key.combo) === false) &&
+            (set.has(player.key.block) === false)
+        ) {
+            if (player.looksLefts) {
+                if (player.x > 20 && player.x < 1350) {
+                    player.x = player.x - 50;
+                }
+            } else {
+                if (player.x > 20 && player.x < 1350) {
+                    player.x = player.x + 50;
+                }
             }
         }
 
@@ -500,7 +527,6 @@ function damageComba(player, player2) {
 
 function damage(player, player2) {
     let block = 0
-
     if (set.has(player2.key.block)) {
         block = player.attack
     }
