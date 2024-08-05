@@ -62,6 +62,19 @@ let player = {
         imgXStop: 20,
         imgYStop: 0,
     },
+    pain: {
+        status: false,
+        imgPainLeft: {
+            img: stop,
+            imgXPain: 700,
+            imgYPain: 455,
+        },
+        imgPainRight: {
+            img: run,
+            imgXPain: 20,
+            imgYPain: 460,
+        }
+    },
     imgFallLeft: {
         img: stop,
         imgXFall: 700,
@@ -166,6 +179,19 @@ let player2 = {
     height: 220,
     width: 120,
     speed: 0,
+    pain: {
+        status: false,
+        imgPainLeft: {
+            img: stop,
+            imgXPain: 700,
+            imgYPain: 455,
+        },
+        imgPainRight: {
+            img: run,
+            imgXPain: 20,
+            imgYPain: 460,
+        }
+    },
     imgMoveLeft: {
         img: run,
         imgXMoveStat: 700,
@@ -536,11 +562,13 @@ function damage(player, player2) {
         }
         if (player.x >= player2.x - player.width && player.y === 400) {
             player2.damage += player.attack - block;
+            player2.pain.status = true
         }
         player.imgAttackRight.animationAttackRight++;
     } else {
         if (player.x <= player2.x + player.width && player.y === 400) {
             player2.damage += player.attack - block;
+            player2.pain.status = true
         }
         if (player.x > 20 && player.x < 1350) {
             player.x = player.x - 50;
@@ -593,6 +621,38 @@ function playerStop(player) {
 
         //  ctx.fillStyle = "green";
         //  ctx.fillRect(player.x, player.y, player.width, player.height);
+    }
+}
+
+function pain(player) {
+    var x, y, side;
+    if (!player.pain.status) {
+        return;
+    }
+    if (!player.fall) {
+        if (player.looksLefts) {
+            side = player.pain.imgPainLeft.img;
+            x = player.pain.imgPainLeft.imgXPain;
+            y = player.pain.imgPainLeft.imgYPain;
+        } else {
+            side = player.pain.imgPainRight.img;
+            x = player.pain.imgPainRight.imgXPain;
+            y = player.pain.imgPainRight.imgYPain;
+        }
+        ctx.drawImage(
+            side,
+            x,
+            y + 15,
+            80,
+            115,
+            player.x + 300,
+            player.y,
+            player.width,
+            player.height + 45
+        );
+        setTimeout(() => {
+            player.pain.status = false
+        }, 1000)
     }
 }
 
@@ -811,6 +871,8 @@ function draw() {
     playerTwoHealths(player2.hp, player2.damage);
     animationCombo(player, player2)
     animationCombo(player2, player)
+    pain(player)
+    pain(player2)
     playerInTimeComba(player);
     playerInTimeComba(player2);
     animationAttack(player, player2)
